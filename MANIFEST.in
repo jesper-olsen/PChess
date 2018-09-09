@@ -1,0 +1,10 @@
+include MANIFEST.in
+include Kid/*.kid
+include bitmaps/*.gif
+include js/*.js
+include chess.css
+include c/*.h
+include makefile
+include ChessLib.txt
+include index.html
+include GAMES/IDs/0

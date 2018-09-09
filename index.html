@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta content="Jesper's HTMLWriter" name="generator" />
+    <meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type" />
+    <link href="/style.css" type="text/css" rel="stylesheet" />
+    <link href="/favicon.ico" rel="SHORTCUT ICON" />
+    <title>PChess/CGIskak</title>
+    <meta content="Chess, game, python, C, AJAX, open source" name="keywords" />
+
+  </head>
+  <body>
+    <h1>PChess/CGIskak</h1>
+    <div style="float: left; text-align: left; margin: 10px 20px 20px 20px">
+      <h2>About</h2>
+      <p>
+PChess is a chess engine, which I originally wrote as part of my
+MSc thesis. 
+The engine performs "brute force" search, with a minimum of chess
+specific knowledge to speed up the search. The search is extended
+iteratively until a certain depth is reached and/or a certain
+number of positions have been investigated.</p>
+      The engine respects the usual termination rules:
+      <ol>
+
+        <li>Check mate</li>
+        <li>Stale mate (draw)</li>
+        <li>Draw by three times repetition</li>
+        <li>Draw by the 50 move rule</li>
+      </ol>
+      <h2>Requirements</h2>
+
+      <ul>
+        <li>
+          <a href="http://www.python.org">Python2.4+</a>
+        </li>
+        <li>a C-compiler for compiling the C-extension - for instance gcc (Unix) or Visual C++ (Windows).</li>
+        <li>
+          <a href="http://kid.lesscode.org">Kid</a>
+          python module.
+        </li>
+      </ul>
+      <h2>Download</h2>
+      The software is released under an open source 
+      <a href="License.txt">license</a>
+      (MIT)
+      <br />
+      Here is a
+      <a href="http://JesperOlsen.Net/Balls/PChess.zip">zip archive</a>
+
+       (50kb) 
+      <br />
+      <br />
+      <h2>Installation</h2>
+      Unpack the zip archive, and install the module using the distutils script in the top-level dir:
+      <pre class="code">
+        
+   % python setup.py install
+      </pre>
+      or
+      <pre class="code">
+
+        
+   % python setup.py install --home=mypath
+      </pre>
+      <h2>Running the engine</h2>
+      
+PChess is a chess engine - it implements the search component in a
+chess game, but does not come with a polished user interface in the
+form of a GUI. The engine can be used in different
+configurations: 
+      <ol>
+        <li>
+          <a href="#terminal">Autoplay in a terminal window</a>
+        </li>
+        <li>
+
+          <a href="#AJAX">interactive HTML interface through a web browser</a>
+        </li>
+        <li>
+          <a href="#turnaments">network turnaments</a>
+        </li>
+      </ol>
+      <h3>Autoplay from a terminal window</h3>
+
+      <a name="terminal" />
+      <p>PChess.py is the script which implements the API for controlling
+the engine. If the script is started as a main -- rather than being
+imported into another script -- it will enter an "autoplay" mode -
+with character output to stdout:</p>
+      <pre class="code">
+        
+    % python PChess.py
+    8 rnbqkbnr
+    7 pppppppp
+    6 ........
+    5 ........
+    4 ........
+    3 .P......
+    2 P.PPPPPP
+    1 RNBQKBNR
+      ABCDEFGH
+    0 white Move: B2 B3 Value: 101 #searched: 195360 / 195360 / 500413 nodes/s; depth: 5
+
+    8 rnbqkbnr
+    7 pp.ppppp
+    6 ..p.....
+    5 ........
+    4 ........
+    3 .P......
+    2 P.PPPPPP
+    1 RNBQKBNR
+      ABCDEFGH
+    1 black Move: C7 C6 Value: -95 #searched: 135963 / 331323 / 443556 nodes/s; depth: 5
+    
+      </pre>
+      <a name="AJAX" />
+      <h3>Interactive HTML interface (AJAX)</h3>
+      
+Alternatively, the cgi script cgiskak.py - based on PChess.py -
+allows interactive play through a normal web browser. 
+The application requires cookies, Javascript and makes use of XmlHttpRequest() calls for getting updates from the server. 
+cgiskak.py has to run on a web server - 
+      <a href="/PChess/cgiskak.py">like this.</a>
+
+      If you don't already have a running webserver, you can setup one up:
+      <pre class="code">
+        
+   % python SimpleHTTPChessServer.py
+   Serving HTTP on 0.0.0.0 port 8000 ...
+    
+      </pre>
+      SimpleHTTPChessServer.py functions as a normal web server, except that the engine is preloaded - which in principle makes the game more CPU efficient, since the normal CGI overhead is bypassed.
+      <a name="turnaments" />
+      <h3>Network tournaments</h3>
+      Finally the ClientServerChess.py script can be used used for
+playing chess tournaments over a TCP socket connection. First the
+server is launched:
+      <pre class="code">
+        
+   % python ClientServerChess.py --server --port 50001
+   initialising Chess Server
+   ServerSocket: listening at 50001
+    
+      </pre>
+
+      And then a client can be connected - here the client plays three games with the server; the client plays white.
+      <pre class="code">
+        
+   % python ClientServerChess.py -client -white -p50001 -n 3
+      </pre>
+      The server terminal window summarises the tournament status:
+      <pre class="code">
+        
+   Connection from: 127.0.0.1 45082
+   1 black Move: E7 E5 Value: 0 #searched: 0 / 0 / 0 nodes/s Depth: 0
+   3 black Move: D7 D6 Value: 0 #searched: 0 / 0 / 0 nodes/s Depth: 0
+   5 black Move: E5 D4 Value: 0 #searched: 0 / 0 / 0 nodes/s Depth: 0
+   7 black Move: B8 C6 Value: 120 #searched: 128867 / 128867 / 11528600 nodes/s Depth: 4
+   9 black Move: H7 H6 Value: 109 #searched: 154832 / 283699 / 1147806 nodes/s Depth: 4
+   ...
+   Tournament Status Status:
+   3 Black is check mate.
+   Total #moves: 155
+   White time: 67.094304 sec / 0.865733 sec per move
+   Black time: 70.646834 sec / 0.911572 sec per move
+   
+      </pre>
+      The purpose of the tournament is here to let two engines play against each other (benchmarking).
+    </div>
+  </body>
+
+</html>
