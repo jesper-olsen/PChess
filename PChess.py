@@ -12,24 +12,9 @@
     and A8 is 63
 """
 
-import random, time, sys, json
+import random, time, sys
+sys.path+=["lib/python"]
 import Chess
-import chesslib
-
-def sq_is_black(i):
-    x=7-i/8
-    y=i % 8
-    flag=(x % 2==y % 2)
-    return flag
-
-def xy2src(x,y,board):
-    i=(7-x)*8+y
-    src="/static/chess/bitmaps/"
-    if sq_is_black(i):
-        src+="b-"
-    else:
-        src+="w-"
-    return src+board[i]+".gif"
 
 def fen_expand(fen):
     """Expand fen chessboard to include *every* square. 
@@ -84,15 +69,9 @@ def read_opening_lib(filename):
             for w in words:
                 seq+=[(xy2i(w[0],w[1]),xy2i(w[2],w[3]))]
     return openings
-
-def load_openings():
-    OPENINGS=[]
-    for op in chesslib.read_openings():
-        OPENINGS+=[[(xy2i(x,y),xy2i(x2,y2)) for (x,y),(x2,y2) in op]]
-    return OPENINGS
         
-#OPENINGS=read_opening_lib("ChessLib.txt")
-OPENINGS=load_openings()
+
+OPENINGS=read_opening_lib("ChessLib.txt")
 
 class PChess:
     """ PChess is a chess engine.
@@ -119,26 +98,6 @@ class PChess:
 
     def __del__(self):
         Chess.free_game(self.cg)
-
-    def get_status(self):
-        if self.game_over():
-            return self.post_mortem()
-        if self.get_turn()=="white":
-            c="White's turn"
-        else:
-            c="Black's turn"
-        if self.in_check():
-            c="Check! " + c
-        return c
-
-    def to_string(self):
-        board=list("."*64)
-        for (tp,i,is_white) in self.get_pieces():
-            if is_white==1:
-                board[i]=tp.upper()
-            else:
-                board[i]=tp.lower()
-        return "".join(board)
 
     def lookup_move(self):
         """return next move from opening lib"""
@@ -182,13 +141,13 @@ class PChess:
             
         self.openings=[]  # op lookup confused by lack of history
         self.log=[]
-        print len(fene), fene
+        print(len(fene), fene)
         return Chess.setup(self.cg, fene, color, castling, enp_sq)
 
     def get_position(self):
         tup=Chess.get_position(self.cg)
         (fene, castling, enp_sq)=tup
-        print tup
+        print(tup)
 
     def compute_move(self):
         """Return move (frm, to, kill, val, n, depth) or None """
@@ -202,7 +161,7 @@ class PChess:
     def make_move(self, frm, to):
         is_kill=Chess.make_move(self.cg, frm, to)
         if is_kill<0:
-            print "Not a legal move:", get_label((frm, to, 0))
+            print("Not a legal move:", get_label((frm, to, 0)))
             raise
         else:
             self.log += [(frm,to,is_kill)]
@@ -220,14 +179,11 @@ class PChess:
     def get_possible(self):
         return Chess.get_possible(self.cg)
 
-    #def save(self, filename):
-    #    f=open(filename, "w")
-    #    for tup in self.log:
-    #        f.write(str(tup[0])+" "+str(tup[1])+"\n")
-    #    f.close()
-
-    def to_json(self):
-        return json.dumps({'log': [tup[:2] for tup in self.log]})
+    def save(self, filename):
+        f=open(filename, "w")
+        for tup in self.log:
+            f.write(str(tup[0])+" "+str(tup[1])+"\n")
+        f.close()
 
     def game_over(self):
         """true if game is over"""
@@ -241,31 +197,19 @@ class PChess:
         Chess.free_game(self.cg)
         self.cg=Chess.new_game()
 
-    def from_json(self, s, max_move=None):
-        d=json.loads(s)
-        l=[]
-        if 'log' in d:
-            l=[(int(a),int(b)) for (a,b) in d['log']]
-        if max_move: l=l[:max_move]
-        self.update(l)
-
-    def update(self,l):
-        for (frm,to) in l:
-            self.make_move(frm,to)
-
-    #def read(self, filename, max_move=-1):
-    #    if len(self.log)>0:
-    #        self.new_game()
-    #    for line in open(filename, "r"):
-    #        words=line.split()
-    #        if len(words)!=2:
-    #            continue 
-    #        frm=int(words[0])
-    #        to=int(words[1])
-    #        self.make_move(frm, to)
-    #        #print len(self.log), get_label((frm, to, 0))
-    #        if max_move>=0 and len(self.log)>max_move:
-    #            return
+    def read(self, filename, max_move=-1):
+        if len(self.log)>0:
+            self.new_game()
+        for line in open(filename, "r"):
+            words=line.split()
+            if len(words)!=2:
+                continue 
+            frm=int(words[0])
+            to=int(words[1])
+            self.make_move(frm, to)
+            #print(len(self.log), get_label((frm, to, 0)))
+            if max_move>=0 and len(self.log)>max_move:
+                return
 
     def get_pieces(self):
         return Chess.get_pieces(self.cg)
@@ -292,9 +236,9 @@ def auto_play(N):
         s="%d %s Move: %s Value: %d #searched: %d / %d / %d nodes/s; depth: %d" % (len(cg.log),cg.get_turn(), get_label(tup),val,n,tot,int(tot/(time.time()-t1)), depth)
         cg.make_move(frm, to)
         cg.display()
-        print s
+        print(s)
         #cg.save("game.txt")
-    print cg.post_mortem()
+    print(cg.post_mortem())
 
 if __name__=="__main__":
     auto_play(-1)

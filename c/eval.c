@@ -317,11 +317,11 @@ void get_fene(ChessGame* cg, char *buffer)
 void get_castling_rights(ChessGame* cg, char *s)
 {
     int z=0;
-    if (cg->CastlingOn[WHITE][RIGHT]=1)
+    if (cg->CastlingOn[WHITE][RIGHT]==1)
         s[z++]='K';
     if (cg->CastlingOn[WHITE][LEFT]==1)
         s[z++]='Q';
-    if (cg->CastlingOn[BLACK][RIGHT]=1)
+    if (cg->CastlingOn[BLACK][RIGHT]==1)
         s[z++]='k';
     if (cg->CastlingOn[BLACK][LEFT]==1)
         s[z++]='q';

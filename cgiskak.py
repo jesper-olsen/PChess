@@ -7,8 +7,16 @@
 """
 
 import cgitb; cgitb.enable()
-import cgi, os, sys, time, os, string, StringIO, glob
-import Cookie
+import cgi, os, sys, time, os, string, glob
+
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
+try:
+    import Cookie
+except ImportError:
+    import http.cookies as Cookie
 from genshi import XML, Markup
 from genshi.template import MarkupTemplate
 sys.path=["lib/python"]+sys.path
@@ -149,12 +157,12 @@ def show_pref(cg):
 
     tmpl=MarkupTemplate(open("Genshi/pref.html", 'r').read())
     stream=tmpl.generate(pref=pref)
-    print "Content-Type: text/html\n\n" + stream.render(doctype='html')
+    print("Content-Type: text/html\n\n" + stream.render(doctype='html'))
 
 def set_cookie(name, value, expires=None):
     if expires==None:
         expires=time.time()+365*24*60*60
-    print "Set-Cookie: %s=%s; path=/%s; expires=%s GMT" % (name, value, COOKIE_PATH, time.strftime("%A, %d-%b-%Y %H:%M:%S", time.gmtime(expires)))
+    print("Set-Cookie: %s=%s; path=/%s; expires=%s GMT" % (name, value, COOKIE_PATH, time.strftime("%A, %d-%b-%Y %H:%M:%S", time.gmtime(expires))))
 
 def get_log_head(cg,user):
     args=["REMOTE_HOST", "REMOTE_ADDR"]
@@ -184,7 +192,7 @@ def process(cg, new, change, param):
         user=param["user"]
     else:
         if not os.path.exists("GAMES/IDs"):
-            os.makedirs("GAMES/IDs")
+            os.mkdir("GAMES/IDs")
         user=str(len(os.listdir("GAMES/IDs")))
         set_cookie("user", user)
         open("GAMES/IDs/"+user, "w").write(user)
@@ -205,7 +213,7 @@ def process(cg, new, change, param):
             gameid+=1
 
     if gameid==None:
-        print display_game(None, "")
+        print(display_game(None, ""))
         return
 
     filename="GAMES/game_%s_%d" % (user,gameid)
@@ -224,10 +232,10 @@ def process(cg, new, change, param):
         log=process_turn(cg, param["move"], change)
 
     if param["xml"]:
-        print xml_response(cg)
+        print(xml_response(cg))
     else:
         review="cgireview.py"
-        print display_game(cg, review)
+        print(display_game(cg, review))
 
     cg.save(filename+".txt")
 
