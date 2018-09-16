@@ -83,7 +83,8 @@ def read_openings():
                 seq+=[((w[0],w[1]),(w[2],w[3]))]
 
 if __name__=="__main__":
-    for i,seq in enumerate(read_openings()):
+    openings=list(read_openings())
+    for i,seq in enumerate(openings):
         print("op",i)
         for mv in seq:
             print("{}->{}".format(mv[0], mv[1]))

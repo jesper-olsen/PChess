@@ -12,9 +12,10 @@
     and A8 is 63
 """
 
-import random, time, sys
-sys.path+=["lib/python"]
+import random, time, sys, os
+#sys.path+=["lib/python"]
 import Chess
+import chesslib
 
 def fen_expand(fen):
     """Expand fen chessboard to include *every* square. 
@@ -71,8 +72,6 @@ def read_opening_lib(filename):
     return openings
         
 
-OPENINGS=read_opening_lib("ChessLib.txt")
-
 class PChess:
     """ PChess is a chess engine.
         
@@ -91,7 +90,9 @@ class PChess:
         self.max_search=100000     #max number of positions to investigate
         self.max_time=-1.0         #seconds
         self.log=[]
-        self.openings=OPENINGS
+        self.openings=list(chesslib.read_openings())
+        for i, seq in enumerate(self.openings):
+            self.openings[i]=[(xy2i(x0,y0),xy2i(x1,y1)) for ((x0,y0),(x1,y1)) in seq]
         #self.openings=read_opening_lib("ChessLib.txt")
         #self.openings=[]
         random.seed()
