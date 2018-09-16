@@ -25,7 +25,7 @@ setup(name="PChess",
       license="MIT",
       download_url="http://JesperOlsen.Net/Balls/PChess.zip",
       description="Chess engine",
-      py_modules=["PChess"],
+      py_modules=["PChess","chesslib"],
       scripts=scripts,
       ext_modules=[Extension("Chess", sources=src, include_dirs=inc,
                                       define_macros=defines)
