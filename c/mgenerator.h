@@ -22,6 +22,9 @@ void move_eq(Move* move1, Move* move2);
 //true if color is in check
 int in_check(ChessGame* cg, int color);
 
+//true if current turn is in check
+int in_check_n(ChessGame* cg);
+
 int pawn_can_capture(void* p, int to, uint64 PieceBitmap);
 int king_can_capture(void* p, int to, uint64 PieceBitmap);
 int knight_can_capture(void* p, int to, uint64 PieceBitmap);

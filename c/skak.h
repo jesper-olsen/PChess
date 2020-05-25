@@ -107,5 +107,6 @@ typedef struct
     Piece piece[32];
     uint64 bmpieces[2], bmpawns[2];
     unsigned int mobility[2];
+    char message[10000];
 } ChessGame;
 

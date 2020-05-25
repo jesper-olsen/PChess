@@ -8,6 +8,7 @@
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "skak.h"
 #include "eval.h"
 #include "mgenerator.h"
@@ -21,6 +22,94 @@ enum {
     LOWER_BOUND=1
 };
 
+int get_from(ChessGame* cg)
+{
+    return (int) cg->next.from;
+}
+
+int get_to(ChessGame* cg)
+{
+    return (int) cg->next.to;
+}
+
+int get_is_kill(ChessGame* cg)
+{
+    if (cg->next.kill!=NULL) return 1;
+    return 0;
+}
+
+int get_val(ChessGame* cg)
+{
+    return cg->next.val;
+}
+
+int get_searched(ChessGame* cg)
+{
+    return cg->number;
+}
+
+int get_depth_actual(ChessGame* cg)
+{
+    return cg->depth_actual;
+}
+
+const char* get_turn(ChessGame* cg)
+{
+    if (cg->color==WHITE)
+        return "white";
+    return "black";
+}
+
+const char* get_legal_moves_str(ChessGame* cg)
+{
+    char* p=cg->message;
+    //todo - check not exceed cg->message length...
+    Move pos[100];
+
+    int num=get_legal_moves(cg, pos);
+    int n=sprintf(p,"[");
+    for (int i=0; i<num; i++)
+        if (i==0) 
+            n+=sprintf(p+n, "[%d,%d]", pos[i].from, pos[i].to);
+        else 
+            n+=sprintf(p+n, ",[%d,%d]", pos[i].from, pos[i].to);
+    n+=sprintf(p+n, "]");
+    return p;
+}
+
+int get_piece(ChessGame* cg, int n, int* is_alive, int* ptype, int* pkoor, int* is_white)
+{
+    *is_alive=cg->piece[n].alive;
+    *ptype=cg->piece[n].type;
+    *pkoor=cg->piece[n].koor;
+    *is_white=cg->piece[n].color==WHITE;
+    return 1;
+}
+
+int set_depth(ChessGame* cg, int depth)
+{
+    cg->depth=depth;
+    return 1;
+}
+
+int set_max_search(ChessGame* cg, int max_search)
+{
+    cg->max_search=max_search;
+    return 1;
+}
+
+int set_max_time(ChessGame* cg, float max_time)
+{
+    cg->max_time=max_time;
+    return 1;
+}
+
+int set_next(ChessGame* cg, int from, int to)
+{
+    cg->next.from=from;
+    cg->next.to=to;
+    return 1;
+}
 
 void init_game(ChessGame* cg)
 {
@@ -286,6 +375,16 @@ void shift_killers(ChessGame* cg)
     cg->kill_tab[i].n2=0;
 } // shift_killers
 
+
+void set_from(ChessGame* cg, int from)
+{
+    cg->next.from=from;
+}
+
+void set_to(ChessGame* cg, int to)
+{
+    cg->next.to=to;
+}
 
 void make_move(ChessGame* cg)
 {
@@ -759,7 +858,7 @@ int pvs(ChessGame* cg, Move* last, Move* best_move, int depth, int ply, int mt, 
 } /* pvs */ 
 
 
-void compute_move(ChessGame* cg, Move* best_child)
+void compute_move(ChessGame* cg)
 {
     int d, j, material, mt, num; 
     int alpha, beta, best=0, score[100];
@@ -794,7 +893,7 @@ void compute_move(ChessGame* cg, Move* best_child)
                            -beta, -MAX(alpha, best));
         best = score[0];
         cg->next=pos[0];
-        *best_child=BChild;
+        cg->best_child=BChild;
         cg->next.val=best;
         backdate_board(cg, &pos[0], bitmaps);
 
@@ -814,7 +913,7 @@ void compute_move(ChessGame* cg, Move* best_child)
                                -beta, -score[j]);
                 best=score[j];
                 cg->next=pos[j];
-                *best_child=BChild;
+                cg->best_child=BChild;
                 cg->next.val=best;
             } 
             backdate_board(cg, &pos[j], bitmaps);

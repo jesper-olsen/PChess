@@ -79,12 +79,10 @@ def read_openings():
             yield seq
             seq=[]
         else:
-            for w in line.split():
-                seq+=[((w[0],w[1]),(w[2],w[3]))]
+            seq+=[((w[0],w[1]),(w[2],w[3])) for w in line.split()]
 
 if __name__=="__main__":
-    openings=list(read_openings())
-    for i,seq in enumerate(openings):
-        print("op",i)
+    for i,seq in enumerate(read_openings()):
+        print("Opening",i)
         for mv in seq:
             print("{}->{}".format(mv[0], mv[1]))

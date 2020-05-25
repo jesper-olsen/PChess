@@ -11,7 +11,7 @@
 
 int setup(ChessGame* cg, char* fene, char* castling, int nc);
 void set_bit2(uint64* bitmap, int x, int y);
-void GetBitmaps(ChessGame* cg, uint64* bitmaps);
+void get_bitmaps(ChessGame* cg, uint64* bitmaps);
 void print_bitmap(uint64 b);
 void CalcPieceBitmaps(ChessGame* cg);
 void get_chess_board(ChessGame* cg);

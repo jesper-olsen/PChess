@@ -102,6 +102,10 @@ int queen_can_capture(void* vp, int to, uint64 PieceBitmap)
              (Bishop[p->koor].ray[0] & power[to])!=0 ));
 }
 
+int in_check_n(ChessGame* cg)
+{
+    return in_check(cg, cg->color);
+}
 
 int in_check(ChessGame* cg, int color)
 {
@@ -173,7 +177,7 @@ void assign_move(Piece **board, int from, Move* pos, int to)
 
 void GetPawnCPos(Piece *board[], Piece *p,
                  Move *last_move,
-                 int color, unsigned int dir, int *n, Move pos[])
+                 int color, unsigned int dir, unsigned int *n, Move pos[])
 {
     Piece *k;
     int s = p->koor+dpawn_cap[color][dir];
@@ -209,7 +213,7 @@ void GetPawnCPos(Piece *board[], Piece *p,
 } /* GetPawnCPos */
 
 void GetPawnNonCaptures(Piece *board[], Piece *p,
-                        int *n, Move pos[])
+                        unsigned int *n, Move pos[])
 {
     const int dy_pawn[2]={1,-1};
     const int pawn_start_row[2]={1,6};
@@ -739,7 +743,7 @@ int get_pos(ChessGame* cg, Move* last_move, int color, Move pos[])
     Piece *first=&cg->piece[first_piece_idx[color]];
     Piece *last=&cg->piece[last_piece_idx[color]];
     uint64 EnemyPieces, m;
-    int n=0; /* number of moves */
+    unsigned int n=0; /* number of moves */
 
     EnemyPieces = cg->bmpieces[!color];
  
