@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='utf-8'?>                                          
+<html>
+  <head>                                                                        
+    <meta content="vi"  name="generator" />                                     
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />  
+    <link href="/static/chess.css"  type="text/css"  rel="stylesheet" />                
+    <link href="/static/favicon.ico"  rel="SHORTCUT ICON" />                           
+    <title>CGIskak</title>                                                      
+    <meta content="Chess, game, python, C, open source"  name="keywords" />     
+  </head>                                                                       
+  <body>                                                                        
+    <h2>CGIskak - Recent games</h2>                                             
+    <p>                                                                         
+      {% if prev!=None -%} <a href="{{prev}}">prev</a> {% endif %}
+      {% if prev!=None and nxt!=None -%} - </span> {% endif %}
+      {% if nxt!=None -%} <a href="{{nxt}}">nxt</a> {% endif %}
+    </p>                                                                        
+    <div style="margin-left: 20px" >                                            
+        {% for (n,url,label,flag) in games %}
+        <span> {{n}} 
+            <a href="{{url}}">{{label}}</a>
+            {% if flag!="" -%} <img src="{{flag}}" width="25px" height="15px" /> {% endif %}
+            <br/>
+        </span>
+        {% endfor %}
+    </div>                                                                      
+    <p>                                                                         
+      <br/>                                                                     
+      <br/>                                                                     
+      <a href="/" >Back to game</a>                                    
+      <br/>                                                                     
+      <br/>                                                                     
+      <hr/>                                                                     
+    </p>                                                                        
+  </body>                                                                       
+</html>        

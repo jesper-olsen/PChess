@@ -1,0 +1,128 @@
+#pagebody	{
+	padding: 0;
+	margin: 0;
+	text-align: left;
+	background: transparent;
+	clear: both;
+        background-color: rgb(50,50,50);
+        border-style: solid;
+        border-color: black;
+        border-width: 0px;
+	}
+
+#maincontent	{
+	float: left;
+	padding: 30px 0px 0px 30px;
+	}
+
+th	{
+	font-weight: bold;
+	}
+
+#sidebar	{
+	padding: 30px 10px 10px 0;
+	margin: 20 0 0 420px;
+	}	
+
+body {background-color: rgb(100, 100, 100);
+      font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;
+      margin-left: 20px;
+      font-size: 10pt; 
+      font-weight: normal;
+      background-color: rgb(50,50,50);
+      color : white;
+}
+
+h,h2 {font-weight: normal;}
+
+.path {}
+
+.selected {visibility: visible;
+           color: green;
+          }
+
+.box {
+    width: 800px;
+    height: 350px;
+    padding: 10px;
+    margin-bottom: 20px;
+    text-align: center;
+    background-color: rgb(50,50,50);
+    border-style: solid;
+    border-color: black;
+    border-width: 1px;
+}
+
+.rss {
+    border: 3px solid;
+    border-color: #FC9 #630 #330 #F96;
+    background: #F60;
+    color: #FFF !important;
+
+    margin: 0;
+    padding: 0 3px;
+    font: bold .7em verdana, sans-serif !important;
+    text-decoration: none !important;
+}
+
+.code {
+    font-family : Courier, Geneva, Arial, Helvetica, sans-serif;
+    width: 900px;
+    padding: 10px;
+    margin-bottom: 20px;
+    text-align: left;
+    background-color: rgb(255,255,255);
+    border-style: solid;
+    color : black;
+    border-color: black;
+    border-width: 1px;
+}
+
+img {border-color: black;}
+
+img.toc {color: black;
+     background-color: black;}
+
+img.toc:hover {
+     color: white;
+     background-color: black;}
+
+img.gallery {color: white;
+     background-color: black;}
+
+img.gallery:hover {
+     color: white;
+     background-color: black;}
+
+.uline {
+    border-bottom : 1px solid;
+}
+
+a:link {
+    color : rgb(0,255,255);
+    text-decoration: none;
+}
+a:active {
+    color : rgb(0,255,255);
+    text-decoration: none;
+}
+a:visited {
+    color : rgb(0,255,255);
+    text-decoration: none;
+}
+a:hover {
+    color: red;
+    text-decoration: none;
+}
+
+.button {
+    border: 3px solid;
+    border-color: rgb(0,0,255) rgb(0,0,100) rgb(0,0,50) rgb(0,0,200);
+    background: rgb(0,0,128);
+    color: #FFF !important;
+
+    margin: 0;
+    padding: 0 3px;
+    font: bold .7em verdana, sans-serif !important;
+    text-decoration: none !important;
+}

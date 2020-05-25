@@ -1,0 +1,54 @@
+<?xml version='1.0' encoding='utf-8'?>                                          
+<html xmlns:py="http://genshi.edgewall.org/">                                   
+  <head>                                                                        
+    <meta content="Jesper's HTMLWriter"  name="generator" />                    
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />  
+    <link href="/static/chess.css"  type="text/css"  rel="stylesheet" />
+    <link href="/static/chess/favicon.ico"  rel="SHORTCUT ICON" />        
+    <title>CGIskak</title>                                                      
+    <meta content="Chess, game, python, C, open source"  name="keywords" />     
+  </head>                                                                       
+  <body>                                                                        
+      <h2>CGIskak - Preferences</h2>                                            
+    <p>Here you can set the game strength. The engine iteratively searches the current position for the best move. Each iteration the search depth is extended by one ply until a stop criteria is met:
+                                                                                
+      <ul>                                                                      
+        <li>The search depth exceeds                                            
+          <em>max_ply</em>                                                      
+        </li>                                                                   
+        <li>The number of positions searched exceeds                            
+          <em>max_search</em>                                                   
+                                                                                
+        </li>                                                                   
+      </ul>                                                                     
+      Below you can set the value of these two parameters.                      
+      <em>max_search</em>                                                       
+      is typically the more useful of the two - since it correlates better with time.
+      In both cases, however, a larger value means stronger game play (and longer response time).
+      <br/>                                                                     
+      <br/>                                                                     
+    </p>                                                                        
+    <form action="" method="post" novalidate>
+      {{ form.hidden_tag() }}
+      <p>
+              {{ form.ply.label }} <br>
+              {{ form.ply }} 
+              {% for error in form.ply.errors %}
+                  <span style="color: red;">[{{ error }}]</span>
+              {% endfor %}
+      </p>
+      <p>
+              {{ form.search.label }} <br>
+              {{ form.search }} 
+              {% for error in form.search.errors %}
+                  <span style="color: red;">[{{ error }}]</span>
+              {% endfor %}
+      </p>
+
+      {{ form.submit() }}
+    </form>                                                                     
+    <br/>                                                                       
+                                                                                
+    <a href="/" >Back to game</a>                                          
+  </body>                                                                       
+</html>       

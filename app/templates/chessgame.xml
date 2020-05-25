@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<chessgame>                                                                     
+    <board>{{board}}</board>                                                       
+    <status>{{status}}</status>                                                    
+    <color>{{color}}</color>                                                       
+    <lastFrom>{{lastFrom}}</lastFrom>                                              
+    <lastTo>{{lastTo}}</lastTo>                                                    
+    <legal>{{legal}}</legal>                                                       
+    <nmoves>{{nmoves}}</nmoves>                                                    
+</chessgame>               

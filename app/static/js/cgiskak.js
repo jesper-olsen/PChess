@@ -1,7 +1,4 @@
 
-//new Image().src="bitmaps/PressedBlackSquare.gif";
-//new Image().src="bitmaps/PressedWhiteSquare.gif";
-
 //global array: legal=[(frm1,to1),(frm2,to2)]
 var legal=[];
 var board=[];
@@ -106,13 +103,21 @@ function set_pressed(n)
 
 function draw_piece(is_pressed, n, type)
 {
+    root="/static/bitmaps/";
     name="sq"+n.toString(10);
     x=7-Math.floor(n/8);
     y=n % 8; 
+    if (type!='.') {
+        if (type==type.toUpperCase())
+            c='w';
+        else
+            c='b';
+    } else 
+        c='';
     if (x % 2 == y % 2)
-        document.images[name].src="bitmaps/"+is_pressed+"b-"+type+".gif";
+        document.images[name].src=root+is_pressed+"b-"+c+type+".gif";
     else
-        document.images[name].src="bitmaps/"+is_pressed+"w-"+type+".gif";
+        document.images[name].src=root+is_pressed+"w-"+c+type+".gif";
 }
 
 function set_status(txt)
@@ -126,7 +131,8 @@ function change_side()
     set_status('wait, processing...');
     from=-1;
     sq_from="";
-    loadXMLDoc("cgiskak.py?xml=1&change=1;")
+    //loadXMLDoc("cgiskak.py?xml=1&change=1;")
+    loadXMLDoc("change")
     legal=[]
 }
 
@@ -136,7 +142,8 @@ function new_game()
     set_status('wait, processing...');
     from=-1;
     sq_from="";
-    loadXMLDoc("cgiskak.py?xml=1&new=1;")
+    //loadXMLDoc("cgiskak.py?xml=1&new=1;")
+    loadXMLDoc("new")
     legal=[]
 }
 
@@ -179,7 +186,9 @@ function move(n)
             set_status('wait, processing...');
             from=-1;
             sq_from="";
-            loadXMLDoc("cgiskak.py?xml=1&move="+legal[i]) ;
+            //loadXMLDoc("cgiskak.py?xml=1&move="+legal[i]) ;
+            //loadXMLDoc("move/"+legal[i]) ;
+            loadXMLDoc("move/"+legal[i][0]+'/'+legal[i][1]) ;
             legal=[]
             //document.choosemove.move.selectedIndex=i;
             //document.choosemo.submit();

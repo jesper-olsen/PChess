@@ -1,0 +1,78 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<?python
+    #board="RP....pr.P....pnBPN...pbK..Pp..kQP...p.qBP....pbNP....pnRP....pr"
+    #legal="[[18, 28], [33, 35]]"
+?>
+
+<html xmlns:py="http://genshi.edgewall.org/">
+  <head>
+    <title>CGIskak</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" /> 
+    <link href="/static/chess.css"  type="text/css"  rel="stylesheet" />
+    <link href="/static/favicon.ico"  rel="SHORTCUT ICON" />
+    <meta content="Chess, game, python, C, open source, AJAX"  name="keywords" />
+    <script src="/static/js/cgiskak.js"  type="text/javascript" >
+    </script>
+    <script type="text/javascript" > legal={{legal}} </script>
+    <script type="text/javascript" > board='{{board}}' </script>
+  </head>
+  <body>
+    <h2>CGIskak</h2>
+    Choose moves by clicking from/to square with the mouse...
+    <br/>
+    <br/>
+    <br/>
+    <div style="position: relative; width: 600px; height: 360px"  class="box" >
+      <div style="position: absolute; left: 5%; top: 10%;"  align="left" >
+
+        <table cellpadding="0"  cellspacing="0"  border="0"  summary="" >
+            {% for y in range(8) %}
+            <tr>
+                {% for x in range(8) %}
+                {% set i=(7-x)*8+7-y  %}
+                {% set src=xy2src(x,7-y,board) %}
+                <td>
+                    <img name="sq{{i}}" src="{{src}}" onmouseover="set_cursor({{i}});" onmousedown="move({{i}});" />
+                </td>
+                {% endfor %}
+                <td>{{8-y}}</td>
+            </tr>
+            {% endfor %}
+            <tr>
+                {% for c in 'ABCDEFGH' %}
+                <td align="center">{{c}}</td>
+                {% endfor %}
+            </tr>
+        </table>
+
+      </div>
+      <div style="position: absolute; left: 55%; top: 10%;"  align="left" >
+        <a align="left"  href="javascript:new_game();"  class="button" >New Game</a>
+        <br/>
+        <br/>
+        <br/>
+        <a href="javascript:change_side();"  class="button" >Change side</a>
+        <p>
+          <br/>
+          <span id="status" >{{status}}</span>
+        </p>
+      </div>
+    </div>
+    <br/><br/> <br/>
+    <div style="width: 630px;" >
+      <hr align="left" />
+      <div style="float: left;" >
+        <a href="/settings" >Preferences</a>
+        -
+        <a href="review" >Review game</a>
+        -
+        <a href="recent/0" >Recent Games</a>
+      </div>
+      <div style="float: right;" >
+        <a href="https://github.com/jesper-olsen/PChess" >
+          <img src="http://opensource.org/trademarks/opensource/web/transparent/opensource-55x48-t.png"  style="border-style: 1px solid black;" />
+        </a>
+      </div>
+    </div>
+  </body>
+</html>
