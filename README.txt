@@ -1,6 +1,6 @@
 # PChess
 
-![alt text](https://github.com/jesper-olsen/PChess/images/PChess.png "Game UI")
+![alt text](https://github.com/jesper-olsen/PChess/blob/master/images/PChess.png "Game UI")
 
 PChess is a chess engine, which I originally wrote as part of my MSc thesis.                      The engine performs "brute force" search, with a minimum of chess specific knowledge to speed up the search. The search is extended iteratively until a certain depth is reached and/or a certain number of positions have been investigated.                          
 
