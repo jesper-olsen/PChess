@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, SubmitField
 from wtforms.validators import DataRequired, NumberRange
-from flask import render_template, flash, redirect
+from flask import render_template, flash, redirect, url_for
 from flask import request
 from flask import make_response
 from app import app
@@ -36,9 +36,12 @@ def xy2src(x,y,board):
 
 
 @app.route('/')
-@app.route('/PChess')
 @app.route('/index')
 def index():
+    return redirect(url_for('pchess'))
+
+@app.route('/PChess')
+def pchess():
     status="Fancy a nice game of chess?"
     board="."*64
     l=[]
