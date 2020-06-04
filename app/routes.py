@@ -154,15 +154,15 @@ def save_game(cg, request, fname, info):
         f.write(json.dumps(info))
 
 def read_game(fname, max_move=None):
-    if not os.path.exists(fname):
+    try:
+        with open(fname, 'r') as f:
+            cg=Chess.PChess()
+            d={"stat":[]}
+            cg.from_json(f.readline(), max_move)
+            d=json.loads(f.readline())
+            return cg, d
+    except:
         return None, None
-    
-    cg=Chess.PChess()
-    d={"stat":[]}
-    with open(fname, 'r') as f:
-        cg.from_json(f.readline(), max_move)
-        d=json.loads(f.readline())
-    return cg, d
 
 def get_game_info(fname):
     try:
@@ -255,8 +255,9 @@ def new():
 def change():
     uid=request.cookies.get('user_id')
     gid=request.cookies.get('game_id')
+    if uid==None or gid==None:
+        return redirect(url_for('new'))
     fname="GAMES/{}_{}.txt".format(uid,gid)
-
     cg,info=read_game(fname)
     if cg==None:
         cg=Chess.PChess()
