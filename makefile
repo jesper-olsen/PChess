@@ -7,7 +7,7 @@ sdist:
 SRC=c/eval.c c/mgenerator.c c/search.c
 
 chess.so:
-	mkdir -p build; cc -O -fPIC -shared -o build/chess.so $(SRC)
+	mkdir -p build GAMES; cc -O -fPIC -shared -o build/chess.so $(SRC)
 
 
 
