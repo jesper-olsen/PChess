@@ -54,6 +54,8 @@ def pchess():
             board=cg.to_string()
             l=cg.get_possible()
             status=cg.get_status()
+        else: # cookie set, but game not found
+            gid=None
     return render_template('main.html', status=status, board=board, legal=l, xy2src=xy2src)
 
 @app.route('/recent')
@@ -109,7 +111,8 @@ def review(gid=""):
         fname="GAMES/{}_{}.txt".format(uid,gid)                                 
         cg,info=read_game(fname)                                                
                                                                                 
-    moves=cg.log                                                                
+    if cg==None: moves=[]
+    else: moves=cg.log                                                                
     cg=Chess.PChess()                                                          
     boards=[]                                                                   
     board=cg.to_string()                                                        
@@ -117,21 +120,20 @@ def review(gid=""):
         cg.make_move(tup[0],tup[1])                                             
         boards+=[(cg.to_string(),cg.get_status())]                              
                                                                                 
-    gdir=os.path.dirname(os.path.realpath(__file__))                            
+
     ifo={}                                                                      
-    flag=""
-    if "remote_host" in info:
-        flag=host2flag(info["remote_host"])                                         
-    if flag!="":ifo["player h"]=flag                                            
-                                                                                
-    print(info['stat'])                                                         
-                                                                                
-    moves=[]                                                                    
-    for d in info['stat']:
-        t=float(d['time'])
-        value = datetime.datetime.fromtimestamp(t)
-        t=value.strftime('%Y-%m-%d %H:%M:%S')                                   
-        moves+=[(d['from'], d['to'], d['is_kill'], t, d['val'], d['searched'], d['depth_actual'])]
+    if info!=None:
+        flag=""
+        if "remote_host" in info:
+            flag=host2flag(info["remote_host"])                                         
+        if flag!="":ifo["player h"]=flag                                            
+                                                                                    
+        moves=[]                                                                    
+        for d in info['stat']:
+            t=float(d['time'])
+            value = datetime.datetime.fromtimestamp(t)
+            t=value.strftime('%Y-%m-%d %H:%M:%S')                                   
+            moves+=[(d['from'], d['to'], d['is_kill'], t, d['val'], d['searched'], d['depth_actual'])]
                                                                                 
     return render_template('review.html', moves=moves, board=board, status="White's turn", boards=boards, info=ifo, xy2src=xy2src, get_label=Chess.get_label, enumerate=enumerate, len=len)
 
