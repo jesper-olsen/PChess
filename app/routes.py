@@ -81,18 +81,18 @@ def recent(offset=0):
             #games+=[{'n':i+offset+1, 'url':url, 'label':label, 'flag':flag}]
     return render_template('list.html', prev=prev, nxt=nxt, games=games)
 
-def host2country(rhost):
-    country=""
-    if rhost=="": return country
-
-    words=rhost.split(".")
-    if len(words)>0 and len(words[-1])==2:
-        country=words[-1]
-    if country=="uk":
-        country="gb"
-    return country
-
 def host2flag(rhost):
+    def host2country(rhost):
+        country=""
+        if rhost=="": return country
+
+        words=rhost.split(".")
+        if len(words)>0 and len(words[-1])==2:
+            country=words[-1]
+        if country=="uk":
+            country="gb"
+        return country
+
     ext=host2country(rhost)
     if ext=="": return ""
     oponent="http://flagspot.net/images/%s/%s.gif"%(ext[0],ext)
@@ -120,7 +120,6 @@ def review(gid=""):
         cg.make_move(tup[0],tup[1])                                             
         boards+=[(cg.to_string(),cg.get_status())]                              
                                                                                 
-
     ifo={}                                                                      
     if info!=None:
         flag=""
@@ -166,15 +165,24 @@ def read_game(fname, max_move=None):
     except:
         return None, None
 
+def lookup_games():
+    fnames=glob.glob("GAMES/*.txt")
+    fnames.sort(key=os.path.getmtime)
+    return fnames
+
 def get_game_info(fname):
-    try:
-        msg,nmoves,rhost=get_status(fname)
-    except:
-        raise
-        return None
+    cg, d=read_game(fname)
+    if cg.game_over():
+        msg=cg.post_mortem()
+    else:
+        msg="Unfinished"
+    rhost="unk"
+    if "remote_host" in d:
+        rhost=d["remote_host"]
+    nmoves=len(cg.log)
+
     if rhost=="": rhost='unk'
-    if nmoves==0:
-        return None
+    if nmoves==0: return None
     name, ext=os.path.splitext(fname)
     gid=name[6:]
     t=os.path.getmtime(fname)
@@ -183,36 +191,14 @@ def get_game_info(fname):
     url="/review/"+gid
     return label, url, rhost, nmoves
 
-def get_status(filename):
-    cg, d=read_game(filename)
-    if cg.game_over():
-        msg=cg.post_mortem()
-    else:
-        msg="Unfinished"
-    host="unk"
-    if "remote_host" in d:
-        host=d["remote_host"]
-    return msg, len(cg.log), host
-
-def lookup_games():
-    fnames=glob.glob("GAMES/*.txt")
-    fnames.sort(key=os.path.getmtime)
-    return fnames
-
 def get_games(offset, N, l=None):
     if l==None:
         l=lookup_games()
-    l2=[]
-    i=0
-    for fname in l[offset:]:
-        print(fname)
+    for i,fname in enumerate( l[offset:] ):
         if i>=N:
             break
-        tup=get_game_info(fname)
-        if tup==None: continue
-        l2+=[tup]
-        i+=1
-    return l2
+        r=get_game_info(fname)
+        if r!=None: yield r
 
 def xml_response(cg):
     legal=cg.get_possible()
