@@ -48,8 +48,7 @@ def pchess():
     gid=request.cookies.get('game_id')
     uid=request.cookies.get('user_id')
     if gid!=None and uid!=None:
-        fname="GAMES/{}_{}.txt".format(uid,gid)
-        cg,info=read_game(fname)
+        cg,info=read_game(uid,gid)
         if cg!=None:
             board=cg.to_string()
             l=cg.get_possible()
@@ -98,18 +97,15 @@ def host2flag(rhost):
     oponent="http://flagspot.net/images/%s/%s.gif"%(ext[0],ext)
     return oponent
 
-@app.route('/review/<gid>')
+@app.route('/review/<uid>/<gid>')
 @app.route('/review')
-def review(gid=""):                                                       
-    cg=None                                                                     
-    if gid!='':                                                                 
-        fname="GAMES/%s.txt"%(gid,)                                             
-        if os.path.exists(fname): cg,info=read_game(fname)                      
-    if cg==None:                                                                
+def review(uid="", gid=""):                                                       
+    if uid!="" and gid!="":
+        cg,info=read_game(uid,gid)                      
+    else:
         uid=request.cookies.get('user_id')
         gid=request.cookies.get('game_id')
-        fname="GAMES/{}_{}.txt".format(uid,gid)                                 
-        cg,info=read_game(fname)                                                
+        cg,info=read_game(uid,gid)                      
                                                                                 
     if cg==None: moves=[]
     else: moves=cg.log                                                                
@@ -146,7 +142,8 @@ def new_gid(gdir,uid):
     if l==[]: return '1'
     return str(max(l)+1)
 
-def save_game(cg, request, fname, info):
+def save_game(cg, request, info, uid, gid):
+    fname="GAMES/{}_{}.txt".format(uid,gid)
     with open(fname, 'w') as f:
         if request.origin!=None: 
             info["http_host"]=request.origin
@@ -154,7 +151,8 @@ def save_game(cg, request, fname, info):
         f.write(cg.to_json()+'\n')
         f.write(json.dumps(info))
 
-def read_game(fname, max_move=None):
+def read_game(uid, gid, max_move=None):
+    fname="GAMES/{}_{}.txt".format(uid,gid)
     try:
         with open(fname, 'r') as f:
             cg=Chess.PChess()
@@ -166,39 +164,36 @@ def read_game(fname, max_move=None):
         return None, None
 
 def lookup_games():
-    fnames=glob.glob("GAMES/*.txt")
-    fnames.sort(key=os.path.getmtime)
-    return fnames
-
-def get_game_info(fname):
-    cg, d=read_game(fname)
-    if cg.game_over():
-        msg=cg.post_mortem()
-    else:
-        msg="Unfinished"
-    rhost="unk"
-    if "remote_host" in d:
-        rhost=d["remote_host"]
-    nmoves=len(cg.log)
-
-    if rhost=="": rhost='unk'
-    if nmoves==0: return None
-    name, ext=os.path.splitext(fname)
-    gid=name[6:]
-    t=os.path.getmtime(fname)
-    date=time.strftime("%Y-%b-%d (%A) %H:%M:%S (GMT)", time.gmtime(t))
-    label=date+"; %s (%d half moves)"%(msg,nmoves)
-    url="/review/"+gid
-    return label, url, rhost, nmoves
+    l=[]
+    for name in glob.glob("GAMES/*_*.txt"):
+        i=name.index('_')
+        l+=[{'uid':name[6:i], 'gid':name[i+1:-4], 't': os.path.getmtime(name)}]
+    l.sort(key=lambda x: x['t'])
+    return l
 
 def get_games(offset, N, l=None):
     if l==None:
         l=lookup_games()
-    for i,fname in enumerate( l[offset:] ):
-        if i>=N:
-            break
-        r=get_game_info(fname)
-        if r!=None: yield r
+    for i,d in enumerate( l[offset:] ):
+        if i>=N: break
+        print(d)
+        cg, info=read_game(d['uid'],d['gid'])
+        nmoves=len(cg.log)
+        if nmoves==0: continue
+
+        if cg.game_over():
+            msg=cg.post_mortem()
+        else:
+            msg="Unfinished"
+        rhost="unk"
+        if "remote_host" in d:
+            if d["remote_host"]!="": rhost=info["remote_host"]
+
+        date=time.strftime("%Y-%b-%d (%A) %H:%M:%S (GMT)", time.gmtime(d['t']))
+        label=date+"; %s (%d half moves)"%(msg,nmoves)
+
+        url="/review/{}/{}".format(d['uid'],d['gid'])
+        yield label, url, rhost, nmoves
 
 def xml_response(cg):
     legal=cg.get_possible()
@@ -229,10 +224,9 @@ def new():
     #gid=str(len(glob.glob("{}/{}_*.txt".format(gdir,uid))))
     gid=new_gid(gdir,uid)
 
-    fname="GAMES/{}_{}.txt".format(uid,gid)
     cg=Chess.PChess()
     info={"stat":[]}
-    save_game(cg, request, fname, info)
+    save_game(cg, request, info, uid, gid)
 
     resp=xml_response(cg)
     resp.set_cookie('user_id',uid)
@@ -245,8 +239,7 @@ def change():
     gid=request.cookies.get('game_id')
     if uid==None or gid==None:
         return redirect(url_for('new'))
-    fname="GAMES/{}_{}.txt".format(uid,gid)
-    cg,info=read_game(fname)
+    cg,info=read_game(uid,gid)
     if cg==None:
         cg=Chess.PChess()
         info={"stat":[]}
@@ -255,15 +248,14 @@ def change():
         is_kill=cg.make_move(move['from'],move['to'])
         move['time']=time.time()
         info["stat"]+=[move]
-    save_game(cg, request, fname, info)
+    save_game(cg, request, info, uid, gid)
     return xml_response(cg)
 
 @app.route('/move/<frm>/<to>')
 def move(frm, to):
     uid=request.cookies.get('user_id')
     gid=request.cookies.get('game_id')
-    fname="GAMES/{}_{}.txt".format(uid,gid)
-    cg,info=read_game(fname)
+    cg,info=read_game(uid,gid)
 
     move=(int(frm),int(to))
     is_kill=cg.make_move(move[0], move[1])
@@ -281,7 +273,7 @@ def move(frm, to):
         is_kill=cg.make_move(move['from'],move['to'])
         move['time']=time.time()
         info["stat"]+=[move]
-    save_game(cg, request, fname, info)
+    save_game(cg, request, info, uid, gid)
 
     return xml_response(cg)
 
