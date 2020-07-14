@@ -63,7 +63,7 @@ def recent(offset=0):
     print("offset=",offset)
     offset=int(offset)
     N=20
-    l=lookup_games()
+    l=list_games()
     prev=None
     nxt=None
     if offset>0:
@@ -72,7 +72,9 @@ def recent(offset=0):
         nxt="/recent/{}".format(offset+N)
 
     games=[]
-    for i, (label, url, rhost, nmoves) in enumerate(get_games(offset, N, l)):
+    for i, g in enumerate(l):
+        if i>=N: break
+        (label,url,rhost,nmoves) = get_game_info(g)
         flag=None
         if rhost!="":
             flag=host2flag(rhost)
@@ -163,7 +165,7 @@ def read_game(uid, gid, max_move=None):
     except:
         return None, None
 
-def lookup_games():
+def list_games():
     l=[]
     for name in glob.glob("GAMES/*_*.txt"):
         i=name.index('_')
@@ -171,29 +173,23 @@ def lookup_games():
     l.sort(key=lambda x: x['t'])
     return l
 
-def get_games(offset, N, l=None):
-    if l==None:
-        l=lookup_games()
-    for i,d in enumerate( l[offset:] ):
-        if i>=N: break
-        print(d)
-        cg, info=read_game(d['uid'],d['gid'])
-        nmoves=len(cg.log)
-        if nmoves==0: continue
+def get_game_info(g):
+    cg, info=read_game(g['uid'],g['gid'])
+    nmoves=len(cg.log)
 
-        if cg.game_over():
-            msg=cg.post_mortem()
-        else:
-            msg="Unfinished"
-        rhost="unk"
-        if "remote_host" in d:
-            if d["remote_host"]!="": rhost=info["remote_host"]
+    if cg.game_over():
+        msg=cg.post_mortem()
+    else:
+        msg="Unfinished"
+    rhost="unk"
+    if "remote_host" in info:
+        if info["remote_host"]!="": rhost=info["remote_host"]
 
-        date=time.strftime("%Y-%b-%d (%A) %H:%M:%S (GMT)", time.gmtime(d['t']))
-        label=date+"; %s (%d half moves)"%(msg,nmoves)
+    date=time.strftime("%Y-%b-%d (%A) %H:%M:%S (GMT)", time.gmtime(g['t']))
+    label=date+"; %s (%d half moves)"%(msg,nmoves)
 
-        url="/review/{}/{}".format(d['uid'],d['gid'])
-        yield label, url, rhost, nmoves
+    url="/review/{}/{}".format(g['uid'],g['gid'])
+    return label, url, rhost, nmoves
 
 def xml_response(cg):
     legal=cg.get_possible()
