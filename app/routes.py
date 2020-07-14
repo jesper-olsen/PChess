@@ -74,7 +74,20 @@ def recent(offset=0):
     games=[]
     for i, g in enumerate(l):
         if i>=N: break
-        (label,url,rhost,nmoves) = get_game_info(g)
+
+        cg, info=read_game(g['uid'],g['gid'])
+        nmoves=len(cg.log)
+        if cg.game_over():
+            msg=cg.post_mortem()
+        else:
+            msg="Unfinished"
+        rhost="unk"
+        if "remote_host" in info:
+            if info["remote_host"]!="": rhost=info["remote_host"]
+        date=time.strftime("%Y-%b-%d (%A) %H:%M:%S (GMT)", time.gmtime(g['t']))
+        label=date+"; %s (%d half moves)"%(msg,nmoves)
+
+        url="/review/{}/{}".format(g['uid'],g['gid'])
         flag=None
         if rhost!="":
             flag=host2flag(rhost)
@@ -172,24 +185,6 @@ def list_games():
         l+=[{'uid':name[6:i], 'gid':name[i+1:-4], 't': os.path.getmtime(name)}]
     l.sort(key=lambda x: x['t'])
     return l
-
-def get_game_info(g):
-    cg, info=read_game(g['uid'],g['gid'])
-    nmoves=len(cg.log)
-
-    if cg.game_over():
-        msg=cg.post_mortem()
-    else:
-        msg="Unfinished"
-    rhost="unk"
-    if "remote_host" in info:
-        if info["remote_host"]!="": rhost=info["remote_host"]
-
-    date=time.strftime("%Y-%b-%d (%A) %H:%M:%S (GMT)", time.gmtime(g['t']))
-    label=date+"; %s (%d half moves)"%(msg,nmoves)
-
-    url="/review/{}/{}".format(g['uid'],g['gid'])
-    return label, url, rhost, nmoves
 
 def xml_response(cg):
     legal=cg.get_possible()
